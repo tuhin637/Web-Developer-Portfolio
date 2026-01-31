@@ -120,13 +120,19 @@
             gap: 3rem;
         }
         .logo {
-            font-size: 1.5rem;
-            font-weight: 900;
+            font-size: 1.8rem;
+            font-weight: 800;
+            font-family: 'Syne', sans-serif;
+            letter-spacing: -0.5px;
+            color: var(--text-dark);
+        }
+        .logo span {
             background: var(--gradient-1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-family: 'Syne', sans-serif;
-            letter-spacing: -1px;
+        }
+        body.light-mode .logo {
+            color: var(--text-light);
         }
         .nav-links {
             display: flex;
@@ -152,8 +158,12 @@
             background: var(--gradient-1);
             transition: width 0.3s ease;
         }
-        .nav-links a:hover::before {
+        .nav-links a:hover::before,
+        .nav-links a.active::before {
             width: 100%;
+        }
+        .nav-links a.active {
+            color: var(--primary);
         }
         .theme-toggle {
             background: var(--gradient-1);
@@ -230,7 +240,26 @@
             color: var(--primary);
             margin-bottom: 1.5rem;
             font-weight: 600;
+            min-height: 2.5rem;
         }
+        
+        /* TYPING ANIMATION STYLES */
+        .typing-animation {
+            display: inline-block;
+            position: relative;
+        }
+        .typing-animation::after {
+            content: '|';
+            position: absolute;
+            right: -5px;
+            animation: blink 0.7s infinite;
+            color: var(--primary);
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
         .hero-text p {
             font-size: 1.1rem;
             margin-bottom: 2rem;
@@ -298,6 +327,8 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(0, 245, 255, 0.5);
         }
+        
+        /* ORIGINAL IMAGE CONTAINER - NOT CHANGED */
         .image-container {
             width: 400px;
             height: 400px;
@@ -319,6 +350,7 @@
             object-fit: cover;
             border-radius: 50%;
         }
+        
         /* Common Styles */
         section {
             padding: 6rem 5%;
@@ -921,9 +953,9 @@
 
     <nav>
         <div class="nav-container">
-            <div class="logo">TUHIN</div>
+            <div class="logo">Port<span>folio</span></div>
             <ul class="nav-links" id="navLinks">
-                <li><a href="#home">Home</a></li>
+                <li><a href="#home" class="active">Home</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#skills">Skills</a></li>
                 <li><a href="#projects">Projects</a></li>
@@ -944,7 +976,7 @@
         <div class="hero-content">
             <div class="hero-text">
                 <h1><span class="gradient-text">MD. Tuhinuzzaman</span><br>Tuhin</h1>
-                <h2>Full-Stack Web Developer</h2>
+                <h2><span class="typing-animation" id="typingText"></span></h2>
                 <p>Passionate about creating innovative web solutions with modern technologies. Specialized in full-stack development, machine learning integration, and building user-friendly applications.</p>
                 <div class="hero-buttons">
                     <a href="#contact" class="btn btn-primary">
@@ -1308,6 +1340,48 @@
     </footer>
 
     <script>
+        // TYPING ANIMATION SCRIPT
+        const titles = [
+            'Full-Stack Web Developer',
+            'Frontend Developer'
+        ];
+        
+        let titleIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typingSpeed = 100;
+        
+        function typeTitle() {
+            const currentTitle = titles[titleIndex];
+            const typingElement = document.getElementById('typingText');
+            
+            if (isDeleting) {
+                typingElement.textContent = currentTitle.substring(0, charIndex - 1);
+                charIndex--;
+                typingSpeed = 50;
+            } else {
+                typingElement.textContent = currentTitle.substring(0, charIndex + 1);
+                charIndex++;
+                typingSpeed = 100;
+            }
+            
+            if (!isDeleting && charIndex === currentTitle.length) {
+                typingSpeed = 2000;
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                titleIndex = (titleIndex + 1) % titles.length;
+                typingSpeed = 500;
+            }
+            
+            setTimeout(typeTitle, typingSpeed);
+        }
+        
+        window.addEventListener('load', () => {
+            setTimeout(typeTitle, 500);
+        });
+        
+        // Theme Toggle
         const themeToggle = document.getElementById('themeToggle');
         const body = document.body;
         const hamburger = document.getElementById('hamburger');
@@ -1348,6 +1422,25 @@
                         behavior: 'smooth',
                         block: 'start'
                     });
+                }
+            });
+        });
+        
+        // Active navigation on scroll
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section[id]');
+            const scrollY = window.pageYOffset;
+            
+            sections.forEach(section => {
+                const sectionHeight = section.offsetHeight;
+                const sectionTop = section.offsetTop - 100;
+                const sectionId = section.getAttribute('id');
+                
+                if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+                    document.querySelectorAll('.nav-links a').forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    document.querySelector(`.nav-links a[href="#${sectionId}"]`)?.classList.add('active');
                 }
             });
         });
