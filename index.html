@@ -284,6 +284,22 @@ section{padding:9rem 7%;position:relative}
 @keyframes soonBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-14px) rotate(2deg)}}
 .soon-title{font-family:var(--serif);font-size:1.75rem;font-weight:700;color:var(--amber);margin-bottom:.9rem}
 
+/* AUTO-OPEN HIGHLIGHT ANIMATION */
+@keyframes cvHighlight {
+  0%   { box-shadow: 0 0 0 0 rgba(15,76,53,0), var(--s1); transform: scale(1); }
+  30%  { box-shadow: 0 0 0 8px rgba(15,76,53,.25), 0 24px 80px rgba(15,12,8,.2); transform: scale(1.018); }
+  60%  { box-shadow: 0 0 0 16px rgba(15,76,53,.12), 0 24px 80px rgba(15,12,8,.2); transform: scale(1.018); }
+  100% { box-shadow: var(--s1); transform: scale(1); }
+}
+.cv-highlight {
+  animation: cvHighlight 1.8s cubic-bezier(.34,1.1,.64,1) forwards;
+  border-color: rgba(15,76,53,.4) !important;
+}
+.cv-highlight.fe-card {
+  animation: cvHighlight 1.8s cubic-bezier(.34,1.1,.64,1) forwards;
+  border-color: rgba(26,92,138,.4) !important;
+}
+
 /* RESEARCH */
 #research{background:linear-gradient(155deg,#0d1a14 0%,#0A1810 40%,#0d1f16 100%);position:relative;overflow:hidden}
 #research::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 15% 30%,rgba(15,76,53,.35),transparent 50%),radial-gradient(ellipse at 85% 70%,rgba(184,134,10,.12),transparent 45%),radial-gradient(ellipse at 50% 100%,rgba(26,92,138,.1),transparent 40%)}
@@ -713,7 +729,6 @@ footer::before{content:'';position:absolute;inset:0;background:radial-gradient(e
 
     <div class="proj-grid">
 
-      <!-- ✅ TasteKart — id added -->
       <div class="project-card featured" id="project-tastekart">
         <div class="card-img">
           <span class="card-num">01</span><span class="card-badge badge-full">Full-Stack</span>
@@ -732,7 +747,6 @@ footer::before{content:'';position:absolute;inset:0;background:radial-gradient(e
         </div>
       </div>
 
-      <!-- ✅ Library — id added -->
       <div class="project-card" id="project-library">
         <div class="card-img">
           <span class="card-num">02</span><span class="card-badge badge-full">Full-Stack</span>
@@ -751,7 +765,6 @@ footer::before{content:'';position:absolute;inset:0;background:radial-gradient(e
         </div>
       </div>
 
-      <!-- ✅ MediConnect — id added -->
       <div class="project-card" id="project-mediconnect">
         <div class="card-img">
           <span class="card-num">04</span><span class="card-badge badge-tele">Telemedicine</span>
@@ -786,7 +799,6 @@ footer::before{content:'';position:absolute;inset:0;background:radial-gradient(e
 
     <div class="proj-grid">
 
-      <!-- ✅ BrewLab — id added -->
       <div class="project-card fe-card featured" id="project-brewlab">
         <div class="card-img">
           <span class="card-num">05</span><span class="card-badge badge-land">Landing Page</span>
@@ -805,7 +817,6 @@ footer::before{content:'';position:absolute;inset:0;background:radial-gradient(e
         </div>
       </div>
 
-      <!-- ✅ BirdScape — id added -->
       <div class="project-card fe-card" id="project-birdscape">
         <div class="card-img">
           <span class="card-num">06</span><span class="card-badge badge-ml">Interactive</span>
@@ -824,7 +835,6 @@ footer::before{content:'';position:absolute;inset:0;background:radial-gradient(e
         </div>
       </div>
 
-      <!-- ✅ ShopHub — id added -->
       <div class="project-card fe-card" id="project-shophub">
         <div class="card-img">
           <span class="card-num">07</span><span class="card-badge badge-ec">E-Commerce UI</span>
@@ -1034,6 +1044,47 @@ footer::before{content:'';position:absolute;inset:0;background:radial-gradient(e
 </div>
 
 <script>
+/* ============================================================
+   CV → PORTFOLIO AUTO-OPEN LIVE DEMO
+   Flow: CV link (#project-tastekart etc.)
+         → portfolio loads & scrolls to card
+         → card glows with highlight animation
+         → Live Demo opens automatically in new tab
+   ============================================================ */
+window.addEventListener('load', function () {
+  const hash = window.location.hash; // e.g. #project-tastekart
+  if (!hash || !hash.startsWith('#project-')) return;
+
+  const projectCard = document.querySelector(hash);
+  if (!projectCard) return;
+
+  // Wait for loader to finish (loader takes ~2.5s), then act
+  setTimeout(function () {
+
+    // 1. Scroll project card into view (centered)
+    projectCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    // 2. Add glowing highlight animation to card
+    setTimeout(function () {
+      projectCard.classList.add('cv-highlight');
+
+      // 3. Find the Live Demo link inside this card and open it
+      // Supports .clink-primary (green) and .clink-sky (blue) for frontend cards
+      const liveLink = projectCard.querySelector('.clink-primary, .clink-sky, .clink-amber');
+      if (liveLink && liveLink.href && liveLink.href !== '#') {
+        window.open(liveLink.href, '_blank');
+      }
+
+      // 4. Remove highlight class after animation completes
+      setTimeout(function () {
+        projectCard.classList.remove('cv-highlight');
+      }, 2000);
+
+    }, 800); // small delay after scroll starts
+
+  }, 2600); // wait for loader animation to finish
+});
+
 /* LOADER */
 (function(){
   const name='TUHIN';const nm=document.getElementById('ldName');const bar=document.getElementById('ldBar');const pct=document.getElementById('ldPct');
