@@ -1044,45 +1044,75 @@ footer::before{content:'';position:absolute;inset:0;background:radial-gradient(e
 </div>
 
 <script>
-/* ============================================================
-   CV → PORTFOLIO AUTO-OPEN LIVE DEMO
-   Flow: CV link (#project-tastekart etc.)
-         → portfolio loads & scrolls to card
-         → card glows with highlight animation
-         → Live Demo opens automatically in new tab
-   ============================================================ */
 window.addEventListener('load', function () {
-  const hash = window.location.hash; // e.g. #project-tastekart
+  const hash = window.location.hash;
   if (!hash || !hash.startsWith('#project-')) return;
 
   const projectCard = document.querySelector(hash);
   if (!projectCard) return;
 
-  // Wait for loader to finish (loader takes ~2.5s), then act
   setTimeout(function () {
-
-    // 1. Scroll project card into view (centered)
     projectCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-    // 2. Add glowing highlight animation to card
     setTimeout(function () {
       projectCard.classList.add('cv-highlight');
 
-      // 3. Find the Live Demo link inside this card and open it
-      // Supports .clink-primary (green) and .clink-sky (blue) for frontend cards
       const liveLink = projectCard.querySelector('.clink-primary, .clink-sky, .clink-amber');
       if (liveLink && liveLink.href && liveLink.href !== '#') {
-        window.open(liveLink.href, '_blank');
+
+        const banner = document.createElement('div');
+        banner.style.cssText = `
+          position: fixed;
+          bottom: 2rem;
+          left: 50%;
+          transform: translateX(-50%);
+          background: linear-gradient(135deg, var(--forest), var(--forest2));
+          color: #fff;
+          font-family: var(--mono);
+          font-size: .72rem;
+          letter-spacing: .1em;
+          padding: 1rem 2rem;
+          border-radius: 14px;
+          box-shadow: 0 8px 40px rgba(15,76,53,.55);
+          z-index: 99999;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: .8rem;
+          white-space: nowrap;
+          border: 1.5px solid rgba(255,255,255,.2);
+          opacity: 0;
+          transition: opacity .4s ease;
+        `;
+        banner.innerHTML = `<i class="fas fa-external-link-alt"></i><span>Click here to open Live Demo →</span>`;
+        document.body.appendChild(banner);
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            banner.style.opacity = '1';
+          });
+        });
+
+        // user click করলে website খুলবে — popup block হবে না ✅
+        banner.addEventListener('click', function () {
+          window.open(liveLink.href, '_blank');
+          banner.style.opacity = '0';
+          setTimeout(() => banner.remove(), 400);
+        });
+
+        // ৮ সেকেন্ড পর auto remove
+        setTimeout(() => {
+          banner.style.opacity = '0';
+          setTimeout(() => banner.remove(), 400);
+        }, 8000);
       }
 
-      // 4. Remove highlight class after animation completes
       setTimeout(function () {
         projectCard.classList.remove('cv-highlight');
       }, 2000);
 
-    }, 800); // small delay after scroll starts
-
-  }, 2600); // wait for loader animation to finish
+    }, 800);
+  }, 2600);
 });
 
 /* LOADER */
