@@ -1047,19 +1047,16 @@ footer::before{content:'';position:absolute;inset:0;background:radial-gradient(e
 window.addEventListener('load', function () {
   const hash = window.location.hash;
   if (!hash || !hash.startsWith('#project-')) return;
-
   const projectCard = document.querySelector(hash);
   if (!projectCard) return;
-
   setTimeout(function () {
     projectCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
     setTimeout(function () {
       projectCard.classList.add('cv-highlight');
-
       const liveLink = projectCard.querySelector('.clink-primary, .clink-sky, .clink-amber');
       if (liveLink && liveLink.href && liveLink.href !== '#') {
-
+        const cardTitle = projectCard.querySelector('.card-title');
+        const projectName = cardTitle ? cardTitle.textContent.split('—')[0].split('–')[0].trim() : 'Live Demo';
         const banner = document.createElement('div');
         banner.style.cssText = `
           position: fixed;
@@ -1085,32 +1082,29 @@ window.addEventListener('load', function () {
           transition: opacity .4s ease;
           text-shadow: 0 1px 3px rgba(0,0,0,.2);
         `;
-        banner.innerHTML = `<i class="fas fa-external-link-alt"></i><span>Click here to open Live Demo →</span>`;
+        banner.innerHTML = `
+          <span style="background:rgba(255,255,255,.25);font-size:.6rem;padding:.2rem .55rem;border-radius:6px;letter-spacing:.08em;font-weight:600;">LIVE</span>
+          <span>Open ${projectName} →</span>
+        `;
         document.body.appendChild(banner);
-
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             banner.style.opacity = '1';
           });
         });
-
         banner.addEventListener('click', function () {
           window.open(liveLink.href, '_blank');
           banner.style.opacity = '0';
           setTimeout(() => banner.remove(), 400);
         });
-
-        // 5 মিনিট = 300000ms
         setTimeout(() => {
           banner.style.opacity = '0';
           setTimeout(() => banner.remove(), 400);
         }, 300000);
       }
-
       setTimeout(function () {
         projectCard.classList.remove('cv-highlight');
       }, 2000);
-
     }, 800);
   }, 2600);
 });
